@@ -10,7 +10,7 @@ require (
 	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
 	github.com/deckarep/golang-set v1.8.0
 	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
-	github.com/elastic/go-sysinfo v1.7.1
+	github.com/elastic/go-sysinfo v1.9.0
 	github.com/fatih/camelcase v1.0.0
 	github.com/getsentry/raven-go v0.2.0
 	github.com/ghodss/yaml v1.0.0
@@ -43,7 +43,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
-	golang.org/x/sys v0.0.0-20220222200937-f2425489ef4c
+	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
 	golang.org/x/tools v0.1.10
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
@@ -64,7 +64,7 @@ require (
 	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/prometheus/procfs v0.7.3 // indirect
+	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
