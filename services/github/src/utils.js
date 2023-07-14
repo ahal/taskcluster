@@ -46,6 +46,7 @@ const throttleRequest = async ({ url, method, response = { status: 0 }, attempt 
 throttleRequest.request = request;
 
 const ciSkipRegexp = new RegExp('\\[(skip ci|ci skip)\\]', 'i');
+const issueCommentRegexp = new RegExp('\s*\\/taskcluster ');
 
 /**
  * Check if push event should be skipped.
@@ -84,6 +85,24 @@ const shouldSkipCommit = ({ commits, head_commit = {} }) => {
 const shouldSkipPullRequest = ({ pull_request }) => {
   return pull_request !== undefined &&
     (ciSkipRegexp.test(pull_request.title) || ciSkipRegexp.test(pull_request.body));
+};
+
+/**
+ * Check if issue_comment event should be skipped.
+ * Any comment that doesn't start with /taskcluster should be skipped.
+ *
+ * @param {body} object event body
+ * @param {body.action} string
+ * @param {body.comment} string
+ * @param {body.issue} object[]
+ * @param {body.issue.pull_request} object[]
+ *
+ * @returns boolean
+ */
+const shouldSkipIssueComment = ({ action, comment, issue }) => {
+  let supported_actions = ["created", "edited"];
+  return supported_actions.includes(action) && issue.pull_request !== undefined &&
+    !issueCommentRegexp.test(comment);
 };
 
 /**
@@ -128,6 +147,7 @@ module.exports = {
   throttleRequest,
   shouldSkipCommit,
   shouldSkipPullRequest,
+  shouldSkipIssueComment,
   ansi2txt,
   tailLog,
   markdownLog,

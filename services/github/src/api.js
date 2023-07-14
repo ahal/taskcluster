@@ -4,7 +4,7 @@ const _ = require('lodash');
 const libUrls = require('taskcluster-lib-urls');
 const yaml = require('js-yaml');
 const { EVENT_TYPES, CHECK_RUN_ACTIONS, PUBLISHERS, GITHUB_TASKS_FOR, GITHUB_BUILD_STATES } = require('./constants');
-const { shouldSkipCommit, shouldSkipPullRequest } = require('./utils');
+const { shouldSkipCommit, shouldSkipPullRequest, shouldSkipIssueComment } = require('./utils');
 const fakePayloads = require('./fake-payloads');
 
 // Strips/replaces undesirable characters which GitHub allows in
@@ -38,6 +38,15 @@ function getPullRequestDetails(eventData) {
     'event.title': eventData.pull_request.title,
     'event.type': 'pull_request.' + eventData.action,
   };
+}
+
+// See https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#issue_comment
+function getIssueCommentDetails(eventData) {
+  // Use all the same events as pull requests.
+  let data = getPullRequestDetails(eventData.issue);
+  data['event.comment'] = eventData.comment;
+  data['event.type'] = 'issue_comment.' + eventData.action;
+  return data;
 }
 
 // See https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#push
@@ -222,7 +231,7 @@ builder.declare({
   stability: 'stable',
   description: [
     'Capture a GitHub event and publish it via pulse, if it\'s a push,',
-    'release, check run or pull request.',
+    'release, check run, pull request or issue comment.',
   ].join('\n'),
 }, async function(req, res) {
   let eventId = req.headers['x-github-delivery'];
@@ -298,6 +307,24 @@ builder.declare({
         publisherKey = PUBLISHERS.PULL_REQUEST;
         msg.tasks_for = GITHUB_TASKS_FOR.PULL_REQUEST;
         msg.branch = body.pull_request.head.ref;
+        break;
+
+      case EVENT_TYPES.ISSUE_COMMENT:
+        if (shouldSkipIssueComment(body)) {
+          debugMonitor.debug({
+            message: 'Skipping issue_comment event',
+            body,
+          });
+          return resolve(res, 200, 'Skipping issue_comment event');
+        }
+
+        msg.organization = sanitizeGitHubField(body.repository.owner.login);
+        msg.action = body.action;
+        msg.details = getIssueCommentDetails(body);
+        msg.installationId = installationId;
+        publisherKey = PUBLISHERS.ISSUE_COMMENT;
+        msg.tasks_for = GITHUB_TASKS_FOR.ISSUE_COMMENT;
+        msg.branch = body.issue.pull_request.head.ref;
         break;
 
       case EVENT_TYPES.PUSH:

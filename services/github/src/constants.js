@@ -16,6 +16,7 @@ const GITHUB_TASKS_FOR = {
   RELEASE: 'github-release',
   PULL_REQUEST: 'github-pull-request',
   PULL_REQUEST_UNTRUSTED: 'github-pull-request-untrusted',
+  ISSUE_COMMENT: "github-issue-comment",
 };
 
 const GITHUB_BUILD_STATES = {
@@ -58,6 +59,7 @@ module.exports = {
     INSTALLATION: 'installation',
     CHECK_SUITE: 'check_suite',
     CHECK_RUN: 'check_run',
+    ISSUE_COMMENT: "issue_comment",
   },
   CHECK_RUN_ACTIONS: {
     CREATED: 'created',
@@ -68,6 +70,7 @@ module.exports = {
   CHECK_RUN_STATES,
   TASK_STATE_TO_CHECK_RUN_STATE,
   PUBLISHERS: {
+    ISSUE_COMMENT: 'issueComment',
     PULL_REQUEST: 'pullRequest',
     PUSH: 'push',
     RELEASE: 'release',
