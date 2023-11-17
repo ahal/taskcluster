@@ -9105,12 +9105,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slugid@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "slugid@npm:3.2.0"
+"slugid@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "slugid@npm:5.0.0"
   dependencies:
-    uuid: "npm:^8.3.2"
-  checksum: 503cd270dd32ccd7db157c8569ec1bdb18f3c5e9e00d471bf15bf53838ff12c831564cfbc1f24b2ee4706dcecfc1fed26b1f6f5b002891186624c6522ff0189a
+    uuid: "npm:^9.0.0"
+  checksum: e871bf0fa6bedfe996f7d19c737a4a4b9819445e5e33cda33e58a3bf8ad2a101c8094ee3a840bb8600b58a53cc24fbb89e4dcc3cf1c0581633cdae4886616937
   languageName: node
   linkType: hard
 
@@ -9990,7 +9990,7 @@ __metadata:
     sentry-api: "npm:^0.2.0"
     sift: "npm:^17.0.0"
     sinon: "npm:^13.0.0"
-    slugid: "npm:^3.2.0"
+    slugid: "npm:^5.0.0"
     snake-case: "npm:^3.0.3"
     subscriptions-transport-ws: "npm:^0.9.7"
     superagent: "npm:^6.0.0"
