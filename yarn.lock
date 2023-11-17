@@ -2875,6 +2875,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chalk@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "chalk@npm:5.3.0"
+  checksum: 8297d436b2c0f95801103ff2ef67268d362021b8210daf8ddbe349695333eb3610a71122172ff3b0272f1ef2cf7cc2c41fdaa4715f52e49ffe04c56340feed09
+  languageName: node
+  linkType: hard
+
 "character-parser@npm:^2.2.0":
   version: 2.2.0
   resolution: "character-parser@npm:2.2.0"
@@ -9903,7 +9910,7 @@ __metadata:
     body-parser-graphql: "npm:^1.0.0"
     builtin-modules: "npm:^3.1.0"
     c8: "npm:^8.0.1"
-    chalk: "npm:^4.0.0"
+    chalk: "npm:^5.3.0"
     commander: "npm:^9.4.1"
     compression: "npm:^1.7.2"
     console-taskgraph: "npm:^1.7.2"
