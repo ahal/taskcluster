@@ -3555,6 +3555,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"define-lazy-prop@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "define-lazy-prop@npm:2.0.0"
+  checksum: db6c63864a9d3b7dc9def55d52764968a5af296de87c1b2cc71d8be8142e445208071953649e0386a8cc37cfcf9a2067a47207f1eb9ff250c2a269658fdae422
+  languageName: node
+  linkType: hard
+
 "define-properties@npm:^1.1.4":
   version: 1.2.1
   resolution: "define-properties@npm:1.2.1"
@@ -3912,10 +3919,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"env-editor@npm:^0.4.1":
-  version: 0.4.2
-  resolution: "env-editor@npm:0.4.2"
-  checksum: edb33583b0ae5197535905cbcefca424796f6afec799604f7578428ee523245edcd7df48d582fdab67dbcc697ed39070057f512e72f94c91ceefdcb432f5eadb
+"env-editor@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "env-editor@npm:1.1.0"
+  checksum: 91357976f2ceb8e5cfadd2c72c2549ddceee62b7cffc5cb7c979f75e1122d05a8195332e3b9995b8215fe8f7f1d31880b4186c618c8ff945c36489a02bd8f3ce
   languageName: node
   linkType: hard
 
@@ -4289,7 +4296,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:^5.0.0":
+"execa@npm:^5.1.1":
   version: 5.1.1
   resolution: "execa@npm:5.1.1"
   dependencies:
@@ -5672,7 +5679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-docker@npm:^2.0.0":
+"is-docker@npm:^2.0.0, is-docker@npm:^2.1.1":
   version: 2.2.1
   resolution: "is-docker@npm:2.2.1"
   bin:
@@ -5863,7 +5870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-wsl@npm:^2.1.1":
+"is-wsl@npm:^2.1.1, is-wsl@npm:^2.2.0":
   version: 2.2.0
   resolution: "is-wsl@npm:2.2.0"
   dependencies:
@@ -6340,12 +6347,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"line-column-path@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "line-column-path@npm:2.0.0"
+"line-column-path@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "line-column-path@npm:3.0.0"
   dependencies:
-    type-fest: "npm:^0.4.1"
-  checksum: ba365bf48d44c6faf91f1704bfaec5e67a8dddd1bfb91f1e2dc9ee1060da3da338a66d73288ffa34fb04fceaa82e3d117d067c631bb8626a472846c019661c4a
+    type-fest: "npm:^2.0.0"
+  checksum: 05635fe95d6e17fe60967b9aa860296c2356c3f92f138d8c49ced30a1c73d307e347a756567c52e6b301fc3227b650d47bd33408c8dc841b51fc6947cc106c05
   languageName: node
   linkType: hard
 
@@ -7508,25 +7515,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open-editor@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "open-editor@npm:3.0.0"
+"open-editor@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "open-editor@npm:4.1.1"
   dependencies:
-    env-editor: "npm:^0.4.1"
-    execa: "npm:^5.0.0"
-    line-column-path: "npm:^2.0.0"
-    open: "npm:^7.3.0"
-  checksum: 75d5b9b772a25fdb771ae74d1d8f9df4a46615112309ba6dac661b8d0ec4fb2692cade50342ab0285ebab3e33b06c08ed4b137011df481e6af7983ef39df3a49
+    env-editor: "npm:^1.1.0"
+    execa: "npm:^5.1.1"
+    line-column-path: "npm:^3.0.0"
+    open: "npm:^8.4.0"
+  checksum: 09bbbab3a116f53bcf41653d8b51b123a6bda1cc40c7e0e10c4b490a7a1579f7da5fe741393e5bbcf8fa7ca510fcd925fa0c5831496ac37cd70323cfd9ee43be
   languageName: node
   linkType: hard
 
-"open@npm:7, open@npm:^7.3.0":
+"open@npm:7":
   version: 7.4.2
   resolution: "open@npm:7.4.2"
   dependencies:
     is-docker: "npm:^2.0.0"
     is-wsl: "npm:^2.1.1"
   checksum: 77573a6a68f7364f3a19a4c80492712720746b63680ee304555112605ead196afe91052bd3c3d165efdf4e9d04d255e87de0d0a77acec11ef47fd5261251813f
+  languageName: node
+  linkType: hard
+
+"open@npm:^8.4.0":
+  version: 8.4.2
+  resolution: "open@npm:8.4.2"
+  dependencies:
+    define-lazy-prop: "npm:^2.0.0"
+    is-docker: "npm:^2.1.1"
+    is-wsl: "npm:^2.2.0"
+  checksum: bb6b3a58401dacdb0aad14360626faf3fb7fba4b77816b373495988b724fb48941cad80c1b65d62bb31a17609b2cd91c41a181602caea597ca80dfbcc27e84c9
   languageName: node
   linkType: hard
 
@@ -9970,7 +9988,7 @@ __metadata:
     node-forge: "npm:^1.0.0"
     nodemailer: "npm:^6.8.0"
     oauth2orize: "npm:^1.11.0"
-    open-editor: "npm:^3.0.0"
+    open-editor: "npm:^4.1.1"
     p-queue: "npm:^6.6.2"
     p-synchronize: "npm:^1.0.0"
     parseurl: "npm:^1.3.3"
@@ -10238,10 +10256,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "type-fest@npm:0.4.1"
-  checksum: 2e65f43209492638244842f70d86e7325361c92dd1cc8e3bf5728c96b980305087fa5ba60652e9053d56c302ef4f1beb9652a91b72a50da0ea66c6b851f3b9cb
+"type-fest@npm:^2.0.0":
+  version: 2.19.0
+  resolution: "type-fest@npm:2.19.0"
+  checksum: a5a7ecf2e654251613218c215c7493574594951c08e52ab9881c9df6a6da0aeca7528c213c622bc374b4e0cb5c443aa3ab758da4e3c959783ce884c3194e12cb
   languageName: node
   linkType: hard
 
