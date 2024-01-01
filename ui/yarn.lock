@@ -6025,7 +6025,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.0.0":
+"crypto-js@npm:^4.2.0":
   version: 4.2.0
   resolution: "crypto-js@npm:4.2.0"
   checksum: 8fbdf9d56f47aea0794ab87b0eb9833baf80b01a7c5c1b0edc7faf25f662fb69ab18dc2199e2afcac54670ff0cd9607a9045a3f7a80336cccd18d77a55b9fdf0
@@ -15594,15 +15594,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"taskcluster-client-web@npm:^44.20.4":
-  version: 44.21.0
-  resolution: "taskcluster-client-web@npm:44.21.0"
+"taskcluster-client-web@npm:^59.2.0":
+  version: 59.2.0
+  resolution: "taskcluster-client-web@npm:59.2.0"
   dependencies:
-    crypto-js: "npm:^4.0.0"
+    crypto-js: "npm:^4.2.0"
     hawk: "npm:^9.0.1"
     query-string: "npm:^7.0.0"
     taskcluster-lib-urls: "npm:^13.0.0"
-  checksum: ccb2d076f9d81ce3d7d7f47a35829d54fdf9cca845cb69003f6bfb24cf0f3264c3e6e7e75bfdf51842527d8375b33ed809342d347eff45474f101c109bb9823e
+  checksum: 7aaf674ba1a84fb70f072aaa3c2e642c373dacf7283845b03eb077aaf8b845b60d72ef4b8ddaddd3856cc52d9df8fac47d743935a70979197b986b9cc0892adf
   languageName: node
   linkType: hard
 
@@ -15736,7 +15736,7 @@ __metadata:
     shebang-loader: "npm:^0.0.1"
     snake-case: "npm:^3.0.3"
     subscriptions-transport-ws: "npm:^0.11.0"
-    taskcluster-client-web: "npm:^44.20.4"
+    taskcluster-client-web: "npm:^59.2.0"
     taskcluster-lib-scopes: "npm:^11.0.0"
     taskcluster-lib-urls: "npm:^13.0.0"
     title-case: "npm:^3.0.2"
