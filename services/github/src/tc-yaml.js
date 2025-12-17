@@ -214,7 +214,7 @@ class VersionOne extends TcYaml {
     return config;
   }
 
-  substituteParameters(config, cfg, payload) {
+  substituteParameters(config, cfg, payload, taskGroupId) {
     branchTest(payload.branch);
 
     let slugids = {};
@@ -232,11 +232,41 @@ class VersionOne extends TcYaml {
         taskcluster_root_url: cfg.taskcluster.rootUrl,
         tasks_for: payload.tasks_for,
         event: payload.body,
+        taskGroupId,
         as_slugid,
       });
     } catch (err) {
       // json-e creates errors that have properties in a format
       // that taskcluster-github messes up. Just fixing it here.
+      if (err.toString && err.location) {
+        throw new Error(err.toString());
+      }
+      throw err;
+    }
+  }
+
+  renderMessages(messages, cfg, payload, taskGroupId) {
+    branchTest(payload.branch);
+
+    let slugids = {};
+    let as_slugid = (label) => {
+      let rv = slugids[label];
+      if (rv) {
+        return rv;
+      } else {
+        return slugids[label] = slugid.nice();
+      }
+    };
+
+    try {
+      return jsone(messages, {
+        taskcluster_root_url: cfg.taskcluster.rootUrl,
+        tasks_for: payload.tasks_for,
+        event: payload.body,
+        taskGroupId,
+        as_slugid,
+      });
+    } catch (err) {
       if (err.toString && err.location) {
         throw new Error(err.toString());
       }

@@ -160,5 +160,54 @@ exchanges.declare({
   CCBuilder: commonCCBuilder,
 });
 
+/** custom exchange */
+exchanges.declare({
+  exchange: 'custom',
+  name: PUBLISHERS.CUSTOM,
+  title: 'GitHub Custom Event',
+  description: [
+    'When a custom message is published from .taskcluster.yml it will be broadcast on this',
+    'exchange with the designated `organization`, `repository`, `topic`, and `event`',
+    'in the routing-key along with event specific metadata in the payload.',
+  ].join('\n'),
+  routingKey: [
+    {
+      name: 'routingKeyKind',
+      summary: 'Identifier for the routing-key kind. This is always `"primary"` for the formalized routing key.',
+      constant: 'primary',
+      required: true,
+    },
+    {
+      name: 'organization',
+      summary: 'The GitHub `organization` which had an event.',
+      maxSize: 39,
+      required: true,
+    },
+    {
+      name: 'repository',
+      summary: 'The GitHub `repository` which had an event.',
+      maxSize: 100,
+      required: true,
+    },
+    {
+      name: 'topic',
+      summary: 'User-defined topic from .taskcluster.yml messages field.',
+      maxSize: 80,
+      multipleWords: true,
+      required: true,
+    },
+    {
+      name: 'event',
+      summary: 'The GitHub event type (e.g., push, pull_request).',
+      maxSize: 25,
+      required: true,
+    },
+  ],
+  schema: 'github-custom-message.yml',
+  messageBuilder: commonMessageBuilder,
+  routingKeyBuilder: msg => ({ ..._.pick(msg, 'organization', 'repository', 'topic'), event: msg.tasks_for.replace(/^github-/, '') }),
+  CCBuilder: commonCCBuilder,
+});
+
 // Export exchanges
 export default exchanges;

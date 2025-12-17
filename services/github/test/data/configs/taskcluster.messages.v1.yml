@@ -1,0 +1,30 @@
+version: 1
+messages:
+  - topic: build-status
+    context:
+      environment: production
+      buildType: release
+      commitSha: {$eval: event.after}
+  - topic: deployment-ready
+    context:
+      timestamp: {$eval: now}
+      pusher: {$eval: event.pusher.email}
+tasks:
+  - $if: 'tasks_for == "github-push"'
+    then:
+      taskId: {$eval: as_slugid('messages-task')}
+      provisionerId: aprovisioner
+      workerType: worker
+      created: {$eval: 'now'}
+      deadline: {$fromNow: '1 hour'}
+      payload:
+        image: "ubuntu:jammy"
+        command:
+          - /bin/bash
+          - -c
+          - echo "Building"
+      metadata:
+        name: "Messages Test Task"
+        description: "Task with custom messages"
+        owner: ${event.pusher.email}
+        source: ${event.repository.url}

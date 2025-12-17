@@ -544,4 +544,48 @@ suite(testing.suiteName(), function() {
       'tasks[3].taskId': 'docker_push',
     },
   );
+
+  buildConfigTest(
+    'Push Event with custom messages, v1',
+    configPath + 'taskcluster.messages.v1.yml',
+    {
+      payload: buildMessage({
+        details: { 'event.type': 'push' },
+        body: webhookPushJson.body,
+        tasks_for: 'github-push',
+        branch: 'master',
+      }),
+    },
+    {
+      'tasks[0].task.metadata.name': 'Messages Test Task',
+      'messages[0].topic': 'build-status',
+      'messages[0].context.environment': 'production',
+      'messages[0].context.buildType': 'release',
+      'messages[0].context.commitSha': webhookPushJson.body.after,
+      'messages[1].topic': 'deployment-ready',
+      scopes: [
+        'assume:repo:github.com/testorg/testrepo:branch:default_branch',
+        'queue:route:statuses',
+        'queue:scheduler-id:tc-gh-devel',
+      ],
+    },
+    1);
+
+  buildConfigTest(
+    'Pull Request Event with messages but wrong event type (no tasks, but messages still present), v1',
+    configPath + 'taskcluster.messages.v1.yml',
+    {
+      payload: buildMessage({
+        details: { 'event.type': 'pull_request.opened' },
+        body: webhookPullRequestJson.body,
+        tasks_for: 'github-pull-request',
+        branch: 'master',
+      }),
+    },
+    {
+      tasks: [],
+      'messages[0].topic': 'build-status',
+      'messages[1].topic': 'deployment-ready',
+    },
+    0);
 });

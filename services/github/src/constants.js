@@ -80,6 +80,7 @@ export const PUBLISHERS = {
   PUSH: 'push',
   RELEASE: 'release',
   RERUN: 'rerun',
+  CUSTOM: 'custom',
 };
 
 export const CHECKLOGS_TEXT = 'View logs in Taskcluster';

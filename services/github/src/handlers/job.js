@@ -1,6 +1,7 @@
 import assert from 'assert';
 import stringify from 'fast-json-stable-stringify';
 import libUrls from 'taskcluster-lib-urls';
+import slugid from 'slugid';
 import { UNIQUE_VIOLATION } from '@taskcluster/lib-postgres';
 import { makeDebug, isCollaborator } from './utils.js';
 import { POLICIES, ALLOW_COMMENT_POLICIES } from './policies.js';
@@ -220,53 +221,13 @@ export async function jobHandler(message) {
   }
 
   let groupState = 'pending';
-  let taskGroupId = 'nonexistent';
-  let graphConfig;
+  // Generate taskGroupId unconditionally for all GitHub events
+  // This ID will be used for the github_build record and passed to json-e evaluation
+  const taskGroupId = slugid.nice();
+  debug(`Generated taskGroupId ${taskGroupId} for ${organization}/${repository}@${sha}`);
 
-  // Now we can try processing the config and kicking off a task.
-  try {
-    graphConfig = this.intree({
-      config: repoconf,
-      payload: message.payload,
-      validator: context.validator,
-      schema: {
-        0: libUrls.schema(this.rootUrl, 'github', 'v1/taskcluster-github-config.yml'),
-        1: libUrls.schema(this.rootUrl, 'github', 'v1/taskcluster-github-config.v1.yml'),
-      },
-    });
-    if (graphConfig.tasks !== undefined && !Array.isArray(graphConfig.tasks)) {
-      throw new Error('tasks field  of .taskcluster.yml must be array of tasks or empty array');
-    }
-    if (!graphConfig.tasks || graphConfig.tasks.length === 0) {
-      debug(`intree config for ${organization}/${repository}@${sha} compiled with zero tasks. Skipping.`);
-
-      // If triggered by a comment, let everyone know we couldn't create tasks
-      if (message.payload.details['event.type'].startsWith('issue_comment')) {
-        await this.createComment({
-          instGithub, organization, repository, pullNumber, sha, debug,
-          body: {
-            summary: 'No Taskcluster jobs started for this command',
-            details: 'Task graph produced empty list of tasks',
-          },
-        });
-      }
-      return;
-    }
-  } catch (e) {
-    debug(`.taskcluster.yml for ${organization}/${repository}@${sha} was not formatted correctly.
-      Leaving comment on Github.`);
-    await this.createExceptionComment({ debug, instGithub, organization, repository, sha, error: e, pullNumber });
-    return;
-  }
-
-  let routes;
-  try {
-    taskGroupId = graphConfig.tasks[0].task.taskGroupId;
-    routes = graphConfig.tasks[0].task.routes;
-  } catch (e) {
-    return await this.createExceptionComment({ debug, instGithub, organization, repository, sha, error: e });
-  }
-
+  // Create github_build record unconditionally (even before parsing yml)
+  // This allows hooks triggered by custom messages to report to GitHub checks
   let build = {
     organization,
     repository,
@@ -276,7 +237,7 @@ export async function jobHandler(message) {
     pull_number: pullNumber,
   };
   try {
-    debug(`Trying to create a record for ${organization}/${repository}@${sha} (${groupState}) in github_builds table`);
+    debug(`Creating github_builds record for ${organization}/${repository}@${sha} (${groupState})`);
     let now = new Date();
     await context.db.fns.create_github_build_pr(
       organization,
@@ -303,6 +264,58 @@ export async function jobHandler(message) {
     assert.equal(build.sha, sha);
     assert.equal(build.eventType, message.payload.details['event.type']);
     assert.equal(build.eventId, message.payload.eventId);
+  }
+
+  let graphConfig;
+  // Now we can try processing the config and kicking off a task.
+  try {
+    graphConfig = this.intree({
+      config: repoconf,
+      payload: message.payload,
+      validator: context.validator,
+      schema: {
+        0: libUrls.schema(this.rootUrl, 'github', 'v1/taskcluster-github-config.yml'),
+        1: libUrls.schema(this.rootUrl, 'github', 'v1/taskcluster-github-config.v1.yml'),
+      },
+      taskGroupId,
+    });
+    if (graphConfig.tasks !== undefined && !Array.isArray(graphConfig.tasks)) {
+      throw new Error('tasks field  of .taskcluster.yml must be array of tasks or empty array');
+    }
+
+    // Publish custom messages if present (only after successful yml parsing)
+    if (graphConfig.messages) {
+      debug("Publishing custom messages from .taskcluster.yml")
+      await this.publishCustomMessages({ graphConfig, message, organization, repository, sha, taskGroupId, debug, context });
+    }
+
+    if (!graphConfig.tasks || graphConfig.tasks.length === 0) {
+      debug(`intree config for ${organization}/${repository}@${sha} compiled with zero tasks. Skipping task creation.`);
+
+      // If triggered by a comment, let everyone know we couldn't create tasks
+      if (message.payload.details['event.type'].startsWith('issue_comment')) {
+        await this.createComment({
+          instGithub, organization, repository, pullNumber, sha, debug,
+          body: {
+            summary: 'No Taskcluster jobs started for this command',
+            details: 'Task graph produced empty list of tasks',
+          },
+        });
+      }
+      return;
+    }
+  } catch (e) {
+    debug(`.taskcluster.yml for ${organization}/${repository}@${sha} was not formatted correctly.
+      Leaving comment on Github.`);
+    await this.createExceptionComment({ debug, instGithub, organization, repository, sha, error: e, pullNumber });
+    return;
+  }
+
+  let routes;
+  try {
+    routes = graphConfig.tasks[0].task.routes;
+  } catch (e) {
+    return await this.createExceptionComment({ debug, instGithub, organization, repository, sha, error: e });
   }
 
   try {

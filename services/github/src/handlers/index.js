@@ -444,6 +444,34 @@ class Handlers {
     }
   }
 
+  async publishCustomMessages({ graphConfig, message, organization, repository, sha, taskGroupId, debug, context }) {
+    if (!graphConfig.messages || graphConfig.messages.length === 0) {
+      return;
+    }
+
+    for (const msg of graphConfig.messages) {
+      try {
+        const payload = {
+          organization: organization.replace(/\./g, '%'),
+          repository: repository.replace(/\./g, '%'),
+          topic: msg.topic,
+          installationId: message.payload.installationId,
+          eventId: message.payload.eventId,
+          tasks_for: message.payload.tasks_for,
+          event: message.payload.body,
+          context: msg.context,
+          taskGroupId,
+        };
+        debug(`Publishing custom message to topic ${msg.topic} for ${organization}/${repository}@${sha} with taskGroupId=${taskGroupId}`);
+        await context.publisher.custom(payload, []);
+      } catch (e) {
+        debug(`Failed to publish custom message for topic ${msg.topic}`);
+        debug(`Stack: ${e.stack}`);
+        // Don't fail the whole process if custom message publication fails
+      }
+    }
+  }
+
   /**
    * Function that examines the yml and decides which policy we're using. Defining policy in the yml is not required
    * by the schema, so if it's not defined, the function returns default policy.

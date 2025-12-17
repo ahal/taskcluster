@@ -43,6 +43,31 @@ properties:
       Automatically cancel running task group on a non-default branch.
       Useful for PRs that are updated frequently. Only the last build will be running.
     default: true
+  messages:
+    type: array
+    description: |
+      Optional array of custom messages to publish to the custom exchange after
+      .taskcluster.yml is processed. Each message is rendered with JSON-e.
+    default: []
+    items:
+      type: object
+      properties:
+        topic:
+          type: string
+          description: |
+            Topic for the routing key. Will be part of the routing key as:
+            primary.<organization>.<repository>.<topic>.<event>
+            Note: Max 80 characters due to AMQP routing key limits.
+          maxLength: 80
+        context:
+          type: object
+          description: |
+            Arbitrary message context that will be rendered with JSON-e and published.
+          additionalProperties: true
+      required:
+        - topic
+        - context
+      additionalProperties: false
   tasks:
     title: Task definition template"
     description: |

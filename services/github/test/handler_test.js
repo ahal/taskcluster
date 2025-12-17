@@ -1853,6 +1853,31 @@ helper.secrets.mockSuite(testing.suiteName(), [], function (mock, skipping) {
       assert.equal(false, github.inst(9988).checks.create.called);
     });
 
+    test('Hook task with same taskGroupId reports to original build', async function () {
+      // Setup: Create original build from github event
+      const sharedTaskGroupId = TASKGROUPID;
+      await addBuild({ state: 'pending', taskGroupId: sharedTaskGroupId });
+
+      // Hook creates a task in the SAME task group
+      const hookTaskId = 'hook-task-id-456';
+
+      // Task is in the same task group (simpler architecture)
+      await simulateExchangeMessage({
+        taskGroupId: sharedTaskGroupId,
+        exchange: 'exchange/taskcluster-queue/v1/task-completed',
+        routingKey: 'route.checks',
+        taskId: hookTaskId,
+      });
+
+      // Verify check run was created for the build
+      assert(github.inst(9988).checks.create.called, 'Check run should be created');
+      const args = github.inst(9988).checks.create.firstCall.args[0];
+      assert.equal(args.owner, 'TaskclusterRobot');
+      assert.equal(args.repo, 'hooks-testing');
+      assert.equal(args.head_sha, '03e9577bc1ec60f2ff0929d5f1554de36b8f48cf');
+      // All tasks in the same taskGroupId are automatically in the same check suite
+    });
+
     test('undefined started and resolved timestamps in check run output', async function () {
       await addBuild({ state: 'pending', taskGroupId: TASKGROUPID });
       await addCheckRun({ taskGroupId: TASKGROUPID, taskId: CUSTOM_LIVELOG_NAME_TASKID });
