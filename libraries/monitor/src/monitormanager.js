@@ -55,6 +55,7 @@ const mmDebug = Debug('@taskcluster/lib-monitor.MonitorManager');
  * @property {boolean} [fake=false] - If true, the monitor will not actually report data
  * @property {object} [metadata={}] - Additional metadata to include in all records
  * @property {boolean} [debug=false] - If true, prints logs to stdout rather than reporting them
+ * @property {boolean} [pretty=false] - If true, formats logs in human-readable format (overrides debug)
  * @property {stream.Writable | null} [destination=null] - The destination stream to write logs to
  * @property {boolean} [verify=false] - If true, verifies record against schema before logging
  * @property {{ reporter: 'SentryReporter' | 'TestReporter' } | null} [errorConfig=null] - Configuration
@@ -208,6 +209,7 @@ export class MonitorManager {
     fake = false,
     metadata = {},
     debug = false,
+    pretty = false,
     destination = null,
     verify = false,
     errorConfig = null,
@@ -270,10 +272,11 @@ export class MonitorManager {
     manager.fake = fake;
     manager.destination = destination;
     manager.debug = debug;
+    manager.pretty = pretty;
     if (destination) {
-      assert(!fake && !debug, 'Cannot use fake/debug with a destination');
+      assert(!fake && !debug && !pretty, 'Cannot use fake/debug/pretty with a destination');
       assert(destination.write, 'Must provide writeable stream as destination');
-    } else if (fake || debug) {
+    } else if (fake || debug || pretty) {
       manager.messages = [];
       manager.destination = new stream.Writable({
         write: (chunk, encoding, next) => {
@@ -390,15 +393,31 @@ export class MonitorManager {
    * Handle a message from any logger. This is only used in testing
    * and development.
    */
-  _handleMessage({ Type, Fields, Logger, Severity, severity, message }) {
+  _handleMessage({ Type, Fields, Logger, Severity, severity, message, Timestamp }) {
     if (this.fake) {
       this.messages.push({ Type, Fields, Logger, Severity });
     }
-    if (this.debug) {
+    if (this.pretty) {
+      // Convert nanosecond timestamp to ISO 8601 string
+      const timestamp = new Date(Timestamp / 1000000).toISOString();
       message = message ? message.toString().replace(/\n/g, '\\n') : '';
       const extra = Object.keys(Fields).reduce((s, f) =>
         s + chalk`\n\t{gray ${f}:} ${String(Fields[f]).replace(/\n/g, '\\n')}`, '');
-      const line = chalk`${LEVELS_REVERSE_COLOR[Severity]}: {gray ${Type}}: ${message}${extra}`;
+      const line = chalk`{gray ${timestamp}} ${LEVELS_REVERSE_COLOR[Severity]}: {gray ${Type}}: ${message}${extra}`;
+      // Check if DEBUG env var is set - if so, use Debug library for filtering
+      if (process.env.DEBUG) {
+        Debug(Logger)(line);
+      } else {
+        // No DEBUG filtering - use console.log so Docker captures it
+        console.log(line);
+      }
+    } else if (this.debug) {
+      // Convert nanosecond timestamp to ISO 8601 string
+      const timestamp = new Date(Timestamp / 1000000).toISOString();
+      message = message ? message.toString().replace(/\n/g, '\\n') : '';
+      const extra = Object.keys(Fields).reduce((s, f) =>
+        s + chalk`\n\t{gray ${f}:} ${String(Fields[f]).replace(/\n/g, '\\n')}`, '');
+      const line = chalk`{gray ${timestamp}} ${LEVELS_REVERSE_COLOR[Severity]}: {gray ${Type}}: ${message}${extra}`;
       Debug(Logger)(line);
     }
   }
